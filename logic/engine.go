@@ -93,13 +93,6 @@ func (e *Engine) Run() {
 	if e.Configs.SaveConfig.SaveHistogram {
 		e.HistogramExporter.WriteHistogram(e.HistogramCount)
 		e.HistogramExporter.CloseFile()
-
-		totalSumHistogram := 0
-		for _, count := range e.HistogramCount {
-			totalSumHistogram += count
-		}
-
-		log.Printf("Total sum histogram: %d", totalSumHistogram)
 	}
 }
 
@@ -136,10 +129,6 @@ func (e *Engine) updateBodies(t, dt float64) {
 		}
 
 		e.Model.UpdateBall(p, t, dt)
-	}
-
-	for _, p := range e.Pegs {
-		e.Model.UpdatePeg(p, t, dt)
 	}
 }
 

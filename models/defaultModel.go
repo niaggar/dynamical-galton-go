@@ -33,23 +33,21 @@ func (dm *DefaultModel) ResolveCollision(ball *entities.Particle, peg *entities.
 	dx := ball.Position[0] - peg.Position[0]
 	dy := ball.Position[1] - peg.Position[1]
 	sumRadius := ball.Radius + peg.Radius
-	impactAngle := math.Atan2(dy, dx)
 
 	vxa := ball.Velocity[0]
 	vya := ball.Velocity[1]
 	alpha0 := peg.Damping
 
-	//sineAngle := math.Sin(impactAngle)
-	//cosineAngle := math.Cos(impactAngle)
+	hip := math.Sqrt(dx*dx + dy*dy)
+	sineAngle := dy / hip
+	cosineAngle := dx / hip
 
-	vTangen := -vxa*math.Sin(impactAngle) + vya*math.Cos(impactAngle)
-	vRadial := -alpha0 * (vxa*math.Cos(impactAngle) + vya*math.Sin(impactAngle))
-
-	vxNew := vRadial*math.Cos(impactAngle) - vTangen*math.Sin(impactAngle)
-	vyNew := vRadial*math.Sin(impactAngle) + vTangen*math.Cos(impactAngle)
-
-	newX := sumRadius*math.Cos(impactAngle) + peg.Position[0]
-	newY := sumRadius*math.Sin(impactAngle) + peg.Position[1]
+	vTangent := -vxa*sineAngle + vya*cosineAngle
+	vRadial := -alpha0 * (vxa*cosineAngle + vya*sineAngle)
+	vxNew := vRadial*cosineAngle - vTangent*sineAngle
+	vyNew := vRadial*sineAngle + vTangent*cosineAngle
+	newX := sumRadius*cosineAngle + peg.Position[0]
+	newY := sumRadius*sineAngle + peg.Position[1]
 
 	ball.Position = [2]float64{newX, newY}
 	ball.Velocity = [2]float64{vxNew, vyNew}
