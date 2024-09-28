@@ -1,0 +1,33 @@
+{
+  "ParticleConfig": {
+    "NParticles": 5000,
+    "Radius": 3,
+    "InitDeltaX": 0,
+    "InitDeltaY": 0,
+    "InitDeltaVx": 1,
+    "InitDeltaVy": 0
+  },
+  "PegConfig": {
+    "MinRadius": 15,
+    "MaxRadius": 15,
+    "Damping": 0.5,
+    "Distribution": 0,
+    "DeltaFactor": 0.3,
+    "CenterFactor": 0
+  },
+  "BoardConfig": {
+    "VerticalSpace": 30,
+    "HorizontalSpace": 60,
+    "NRows": 20,
+    "NCols": 26
+  },
+  "EngineConfig": {
+    "SubSteps": 10,
+    "MaxSteps": 4000,
+    "Dt": 0.03
+  },
+  "SaveConfig": {
+    "SavePaths": false,
+    "SaveHistogram": true
+  }
+}
