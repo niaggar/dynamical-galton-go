@@ -2,22 +2,38 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"go-galtonboard/logic"
 	"go-galtonboard/utils"
 	"log"
+	"os"
 	"runtime"
 	"sync"
 	"time"
 )
 
 func main() {
-	cpus := runtime.NumCPU()
+	var projectRoutes utils.FlagSlice
+	flag.Var(&projectRoutes, "path", "Project routes (can be specified multiple times)")
+	createDefaultConfig := flag.Bool("default", false, "Create a default configuration file")
+	debug := flag.Bool("debug", false, "Enable debug mode, which use default values for the configuration (boolean)")
+	cpuCount := flag.Int("cpu", 1, "Number of CPUs to use")
+	flag.Usage = func() {
+		fmt.Fprintln(os.Stderr, "Copyright (c) 2024 Nicolas Aguilera García \nUsage: go-galtonboard [flags]")
+		flag.PrintDefaults()
+	}
+	flag.Parse()
+
+	cpus := *cpuCount
+	if cpus > runtime.NumCPU() {
+		cpus = runtime.NumCPU()
+	}
 	runtime.GOMAXPROCS(cpus)
 
-	var projectRoutes utils.FlagSlice
-	flag.Var(&projectRoutes, "projectRoute", "Project routes (can be specified multiple times)")
-	createDefaultConfig := flag.Bool("createDefaultConfig", false, "Create a default configuration file")
-	flag.Parse()
+	if *debug {
+		projectRoutes = append(projectRoutes, "./")
+		*createDefaultConfig = true
+	}
 
 	if len(projectRoutes) == 0 {
 		log.Println("No project routes specified")

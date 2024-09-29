@@ -57,9 +57,11 @@ type BoardConfig struct {
 
 // EngineConfig represents the configuration of the logic
 type EngineConfig struct {
-	SubSteps int
-	MaxSteps int
-	Dt       float64
+	SubSteps    int
+	MaxSteps    int
+	Dt          float64
+	ThreadCount int
+	CPUCount    int
 }
 
 // SaveConfig represents the configuration of the save
@@ -99,6 +101,10 @@ func LoadConfig(route string) (*Configs, error) {
 // CreateBaseConfig creates a new default configuration file
 func CreateBaseConfig(route string) error {
 	fileName := route + "config.json"
+	if fileExist(fileName) {
+		return nil
+	}
+
 	file, err := os.Create(fileName)
 	if err != nil {
 		return errors.New("error creating the configuration file")
@@ -107,15 +113,15 @@ func CreateBaseConfig(route string) error {
 	config := Configs{
 		ParticleConfig: ParticleConfig{
 			NParticles:  100,
-			Radius:      5,
-			InitDeltaX:  1,
-			InitDeltaY:  1,
-			InitDeltaVx: 5,
-			InitDeltaVy: 5,
+			Radius:      1,
+			InitDeltaX:  0.5,
+			InitDeltaY:  0,
+			InitDeltaVx: 1,
+			InitDeltaVy: 0,
 		},
 		PegConfig: PegConfig{
-			MinRadius:    15,
-			MaxRadius:    15,
+			MinRadius:    7,
+			MaxRadius:    7,
 			Damping:      0.5,
 			DeltaFactor:  0.1,
 			CenterFactor: 0,
@@ -124,13 +130,15 @@ func CreateBaseConfig(route string) error {
 		BoardConfig: BoardConfig{
 			VerticalSpace:   20,
 			HorizontalSpace: 20,
-			NRows:           10,
-			NCols:           11,
+			NRows:           20,
+			NCols:           25,
 		},
 		EngineConfig: EngineConfig{
-			SubSteps: 10,
-			MaxSteps: 1000,
-			Dt:       0.03,
+			SubSteps:    2,
+			MaxSteps:    10000,
+			Dt:          0.03,
+			ThreadCount: 1,
+			CPUCount:    1,
 		},
 		SaveConfig: SaveConfig{
 			SavePaths:     true,
@@ -145,4 +153,12 @@ func CreateBaseConfig(route string) error {
 	}
 
 	return nil
+}
+
+func fileExist(name string) bool {
+	if _, err := os.Stat(name); errors.Is(err, os.ErrNotExist) {
+		return false
+	} else {
+		return true
+	}
 }
