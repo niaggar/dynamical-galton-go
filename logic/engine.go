@@ -175,12 +175,27 @@ func (e *Engine) validateCollisionsMesh() {
 	sliceWidth := rows / sliceCount
 	sliceHeight := cols / sliceCount
 
+	maxWidth := 0
+	maxHeight := 0
 	var wg sync.WaitGroup
 	for i := 0; i < sliceCount; i++ {
 		for j := 0; j < sliceCount; j++ {
 			wg.Add(1)
 			go e.solveCollisionThreaded(i*sliceWidth, (i+1)*sliceWidth, j*sliceHeight, (j+1)*sliceHeight, &wg)
+
+			maxWidth = (i + 1) * sliceWidth
+			maxHeight = (j + 1) * sliceHeight
 		}
+	}
+
+	if maxWidth < rows {
+		wg.Add(1)
+		go e.solveCollisionThreaded(maxWidth, rows, 0, cols, &wg)
+	}
+
+	if maxHeight < cols {
+		wg.Add(1)
+		go e.solveCollisionThreaded(0, maxWidth, maxHeight, cols, &wg)
 	}
 	wg.Wait()
 }

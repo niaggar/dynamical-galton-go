@@ -30,6 +30,8 @@ func main() {
 	}
 	runtime.GOMAXPROCS(cpus)
 
+	log.Println("Using", cpus, "CPUs")
+
 	if *debug {
 		projectRoutes = append(projectRoutes, "./")
 		*createDefaultConfig = true
