@@ -55,12 +55,11 @@ func runConfiguration(projectRoute string, createDefaultConfig bool, group *sync
 		return
 	}
 
-	log.Println("Running simulation for: ", projectRoute)
-
-	start := time.Now()
 	engine := logic.NewEngine(*config, projectRoute)
+
+	log.Println("Running simulation for: ", projectRoute)
+	start := time.Now()
 	engine.Run()
 	elapsed := time.Since(start)
-
 	log.Println("Simulation for", projectRoute, "finished in:", elapsed)
 }
