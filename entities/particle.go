@@ -88,17 +88,9 @@ func getRadius(pegConfig *utils.PegConfig, boardConfig *utils.BoardConfig, row, 
 
 	// Horizontal distributions
 	case utils.PegLogarithmicDistHorizontal:
-		x := column - boardConfig.NCols/2
-		if x == 0 {
-			x = 1
-		} else if x < 0 {
-			x -= 1
-		} else {
-			x += 1
-		}
-
+		x := math.Abs(float64(column - boardConfig.NCols/2))
 		amplitude := (pegConfig.MaxRadius - pegConfig.MinRadius) / math.Log(float64(boardConfig.NCols/2))
-		return pegConfig.MinRadius + amplitude*math.Log(float64(x))
+		return pegConfig.MinRadius + amplitude*math.Log(x+1)
 
 	case utils.PegGaussianDistHorizontal:
 		x := column - boardConfig.NCols/2
@@ -116,17 +108,9 @@ func getRadius(pegConfig *utils.PegConfig, boardConfig *utils.BoardConfig, row, 
 
 	// Vertical distributions
 	case utils.PegLogarithmicDistVertical:
-		y := row - boardConfig.NRows/2
-		if y == 0 {
-			y = 1
-		} else if y < 0 {
-			y -= 1
-		} else {
-			y += 1
-		}
-
+		y := math.Abs(float64(row - boardConfig.NRows/2))
 		amplitude := (pegConfig.MaxRadius - pegConfig.MinRadius) / math.Log(float64(boardConfig.NCols/2))
-		return pegConfig.MinRadius + amplitude*math.Log(float64(y))
+		return pegConfig.MinRadius + amplitude*math.Log(y+1)
 
 	case utils.PegGaussianDistVertical:
 		y := row - boardConfig.NRows/2
