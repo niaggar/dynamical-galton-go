@@ -82,13 +82,11 @@ func (e *Engine) Run() {
 		}
 
 		for j := 0; j < e.Configs.EngineConfig.SubSteps; j++ {
+			e.validateConstraintsMesh()
 			e.applyForces()
 			e.updateBodies(t, dtt)
-			//e.validateCollisions()
-			//e.validateConstraints()
 			e.updateMesh()
 			e.validateCollisionsMesh()
-			e.validateConstraintsMesh()
 
 			t += dtt
 		}
@@ -149,21 +147,6 @@ func (e *Engine) updateBodies(t, dt float64) {
 		}
 
 		e.Model.UpdateBall(p, t, dt)
-	}
-}
-
-func (e *Engine) validateCollisions() {
-	for _, p := range e.Particles {
-		if p.IsStopped {
-			continue
-		}
-
-		for _, peg := range e.Pegs {
-			distanceSquare := utils.DistanceSquare(&p.Position, &peg.Position)
-			if distanceSquare < (p.Radius+peg.Radius)*(p.Radius+peg.Radius) {
-				e.Model.ResolveCollision(p, peg)
-			}
-		}
 	}
 }
 
@@ -238,39 +221,6 @@ func (e *Engine) checkAtomCellCollisions(particleId int, c *entities.Cell) {
 		distanceSquare := utils.DistanceSquare(&p.Position, &peg.Position)
 		if distanceSquare < (p.Radius+peg.Radius)*(p.Radius+peg.Radius) {
 			e.Model.ResolveCollision(p, peg)
-		}
-	}
-}
-
-func (e *Engine) validateConstraints() {
-	for _, p := range e.Particles {
-		if p.IsStopped {
-			continue
-		}
-
-		if p.Position[0]-p.Radius < e.HorizontalMin {
-			p.Position[0] = e.HorizontalMin + p.Radius
-			p.Velocity[0] = -p.Velocity[0] * p.Damping
-		}
-
-		if p.Position[0]+p.Radius > e.HorizontalMax {
-			p.Position[0] = e.HorizontalMax - p.Radius
-			p.Velocity[0] = -p.Velocity[0] * p.Damping
-		}
-
-		if p.Position[1]-p.Radius < e.VerticalMin {
-			p.Position[1] = e.VerticalMin + p.Radius
-			p.Velocity[1] = -p.Velocity[1] * p.Damping
-			p.IsStopped = true
-
-			x := p.Position[0] - e.HorizontalMin
-			col := int(x / e.Configs.BoardConfig.HorizontalSpace)
-			e.HistogramCount[col]++
-		}
-
-		if p.Position[1]+p.Radius > e.VerticalMax {
-			p.Position[1] = e.VerticalMax - p.Radius
-			p.Velocity[1] = -p.Velocity[1] * p.Damping
 		}
 	}
 }

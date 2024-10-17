@@ -2,6 +2,7 @@ package entities
 
 import (
 	"go-galtonboard/utils"
+	"log"
 	"math"
 )
 
@@ -47,6 +48,9 @@ func (m *Mesh) AddParticleToCell(x, y float64, particleType int, particleId int)
 	}
 
 	cellIndex := column*m.Rows + row
+	if cellIndex >= len(m.Cells) || cellIndex < 0 {
+		log.Fatal("AddParticleToCell: cellIndex out of bounds. Particle position: (", x, y, ") Row: ", row, " Column: ", column)
+	}
 	if particleType == utils.Peg {
 		m.Cells[cellIndex].PegsIds = append(m.Cells[cellIndex].PegsIds, particleId)
 	} else {
