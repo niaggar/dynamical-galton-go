@@ -49,7 +49,6 @@ func NewPegs(pegConfig utils.PegConfig, boardConfig utils.BoardConfig) ([]*Parti
 	for i := 0; i < boardConfig.NRows; i++ {
 		for j := 0; j < boardConfig.NCols; j++ {
 			peg := &Particle{}
-			radius := getRadius(&pegConfig, &boardConfig, i, j)
 
 			x := float64(j) * (boardConfig.HorizontalSpace)
 			y := float64(i) * (boardConfig.VerticalSpace)
@@ -62,7 +61,7 @@ func NewPegs(pegConfig utils.PegConfig, boardConfig utils.BoardConfig) ([]*Parti
 			}
 
 			peg.Position = utils.Point{x, y}
-			peg.Radius = radius
+			peg.Radius = getRadius(&pegConfig, &boardConfig, y, x)
 			peg.Damping = pegConfig.Damping
 			peg.Type = utils.Peg
 			pegs = append(pegs, peg)
@@ -81,49 +80,56 @@ func NewPegs(pegConfig utils.PegConfig, boardConfig utils.BoardConfig) ([]*Parti
 	return pegs, border
 }
 
-func getRadius(pegConfig *utils.PegConfig, boardConfig *utils.BoardConfig, row, column int) float64 {
+func getRadius(pegConfig *utils.PegConfig, boardConfig *utils.BoardConfig, row, column float64) float64 {
+	yMiddle := boardConfig.VerticalSpace * float64(boardConfig.NRows/2)
+	xMiddle := boardConfig.HorizontalSpace * float64(boardConfig.NCols/2)
+
 	switch pegConfig.Distribution {
 	case utils.PegUniformDist:
 		return pegConfig.MinRadius
 
 	// Horizontal distributions
 	case utils.PegLogarithmicDistHorizontal:
-		x := math.Abs(float64(column - boardConfig.NCols/2))
-		amplitude := (pegConfig.MaxRadius - pegConfig.MinRadius) / math.Log(float64(boardConfig.NCols/2))
+		x := math.Abs(column - xMiddle)
+		amplitude := (pegConfig.MaxRadius - pegConfig.MinRadius) / math.Log(xMiddle)
 		return pegConfig.MinRadius + amplitude*math.Log(x+1)
 
 	case utils.PegGaussianDistHorizontal:
-		x := column - boardConfig.NCols/2
-		gauss := math.Exp(-pegConfig.DeltaFactor * math.Pow(float64(x-pegConfig.CenterFactor), 2))
+		centerFactor := float64(pegConfig.CenterFactor) * boardConfig.HorizontalSpace
+		x := column - xMiddle
+		gauss := math.Exp(-pegConfig.DeltaFactor * math.Pow(x-centerFactor, 2))
 		return (pegConfig.MaxRadius-pegConfig.MinRadius)*gauss + pegConfig.MinRadius
 
 	case utils.PegInverseGaussianDistHorizontal:
-		x := column - boardConfig.NCols/2
-		gauss := math.Exp(-pegConfig.DeltaFactor * math.Pow(float64(x-pegConfig.CenterFactor), 2))
+		centerFactor := float64(pegConfig.CenterFactor) * boardConfig.HorizontalSpace
+		x := column - xMiddle
+		gauss := math.Exp(-pegConfig.DeltaFactor * math.Pow(x-centerFactor, 2))
 		return pegConfig.MaxRadius - (pegConfig.MaxRadius-pegConfig.MinRadius)*gauss
 
 	case utils.PegSineDistHorizontal:
-		sin := math.Pow(math.Sin(float64(column)*pegConfig.DeltaFactor), 2)
+		sin := math.Pow(math.Sin(column*pegConfig.DeltaFactor), 2)
 		return pegConfig.MinRadius + (pegConfig.MaxRadius-pegConfig.MinRadius)*sin
 
 	// Vertical distributions
 	case utils.PegLogarithmicDistVertical:
-		y := math.Abs(float64(row - boardConfig.NRows/2))
-		amplitude := (pegConfig.MaxRadius - pegConfig.MinRadius) / math.Log(float64(boardConfig.NCols/2))
+		y := math.Abs(row - yMiddle)
+		amplitude := (pegConfig.MaxRadius - pegConfig.MinRadius) / math.Log(yMiddle)
 		return pegConfig.MinRadius + amplitude*math.Log(y+1)
 
 	case utils.PegGaussianDistVertical:
-		y := row - boardConfig.NRows/2
-		gauss := math.Exp(-pegConfig.DeltaFactor * math.Pow(float64(y-pegConfig.CenterFactor), 2))
+		centerFactor := float64(pegConfig.CenterFactor) * boardConfig.VerticalSpace
+		y := row - yMiddle
+		gauss := math.Exp(-pegConfig.DeltaFactor * math.Pow(y-centerFactor, 2))
 		return (pegConfig.MaxRadius-pegConfig.MinRadius)*gauss + pegConfig.MinRadius
 
 	case utils.PegInverseGaussianDistVertical:
-		y := row - boardConfig.NRows/2
-		gauss := math.Exp(-pegConfig.DeltaFactor * math.Pow(float64(y-pegConfig.CenterFactor), 2))
+		centerFactor := float64(pegConfig.CenterFactor) * boardConfig.VerticalSpace
+		y := row - yMiddle
+		gauss := math.Exp(-pegConfig.DeltaFactor * math.Pow(y-centerFactor, 2))
 		return pegConfig.MaxRadius - (pegConfig.MaxRadius-pegConfig.MinRadius)*gauss
 
 	case utils.PegSineDistVertical:
-		sin := math.Pow(math.Sin(float64(row)*pegConfig.DeltaFactor), 2)
+		sin := math.Pow(math.Sin(row*pegConfig.DeltaFactor), 2)
 		return pegConfig.MinRadius + (pegConfig.MaxRadius-pegConfig.MinRadius)*sin
 
 	default:
