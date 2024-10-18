@@ -132,6 +132,19 @@ func getRadius(pegConfig *utils.PegConfig, boardConfig *utils.BoardConfig, row, 
 		sin := math.Pow(math.Sin(row*pegConfig.DeltaFactor), 2)
 		return pegConfig.MinRadius + (pegConfig.MaxRadius-pegConfig.MinRadius)*sin
 
+	// Other distributions
+	case utils.SphericDist:
+		distanceX := math.Abs(column - xMiddle)
+		distanceY := math.Abs(row - yMiddle)
+		distance := math.Sqrt(math.Pow(distanceX, 2) + math.Pow(distanceY, 2))
+		if distance <= pegConfig.DeltaFactor {
+			return pegConfig.MaxRadius
+		}
+		return pegConfig.MinRadius
+
+	case utils.SphericGaussianDist:
+		return pegConfig.MinRadius + (pegConfig.MaxRadius-pegConfig.MinRadius)*rand.NormFloat64()
+
 	default:
 		log.Fatal("Invalid pegs distribution in the config file. Valid values are: \n" +
 			"HORIZONTAL DISTRIBUTIONS\n" +

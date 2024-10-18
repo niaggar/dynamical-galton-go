@@ -25,6 +25,9 @@ const (
 	PegGaussianDistVertical
 	PegInverseGaussianDistVertical
 	PegSineDistVertical
+
+	SphericDist
+	SphericGaussianDist
 )
 
 // ParticleConfig represents the configuration of the particles
