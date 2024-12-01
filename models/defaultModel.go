@@ -25,8 +25,21 @@ func (dm *DefaultModel) UpdateBall(particle *entities.Particle, t, dt float64) {
 	particle.Velocity = *state.Velocity
 }
 
-func (dm *DefaultModel) UpdatePeg(particle *entities.Particle, t, dt float64) {
+func (dm *DefaultModel) UpdatePeg(particle *entities.Particle, t, dt float64, displacement *utils.PegDisplacement) {
+	if !displacement.Displacement {
+		return
+	}
 
+	px := particle.Position[0]
+	py := particle.Position[1]
+	npx := displacement.AmplitudeX * math.Cos(displacement.FrequencyX*t)
+	npy := displacement.AmplitudeY * math.Sin(displacement.FrequencyY*t)
+
+	newDx := particle.PrevUpdateD[0] - npx
+	newDy := particle.PrevUpdateD[1] - npy
+
+	particle.PrevUpdateD = [2]float64{npx, npy}
+	particle.Position = [2]float64{px + newDx, py + newDy}
 }
 
 func (dm *DefaultModel) ResolveCollision(ball *entities.Particle, peg *entities.Particle) {

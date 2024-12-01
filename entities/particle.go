@@ -16,6 +16,7 @@ type Particle struct {
 	Radius       float64
 	Type         int
 	IsStopped    bool
+	PrevUpdateD  utils.Point
 }
 
 // NewParticles returns a new particle with the given values.
@@ -30,11 +31,12 @@ func NewParticles(config utils.ParticleConfig, startPoint *utils.Point) []*Parti
 		randomY := config.InitDeltaY * rand.Float64()
 
 		particles[i] = &Particle{
-			Position: utils.Point{startPoint[0] + randomX, startPoint[1] + randomY},
-			Velocity: utils.Point{randomVx, randomVy},
-			Damping:  1,
-			Radius:   config.Radius,
-			Type:     utils.Particle,
+			Position:    utils.Point{startPoint[0] + randomX, startPoint[1] + randomY},
+			Velocity:    utils.Point{randomVx, randomVy},
+			Damping:     1,
+			Radius:      config.Radius,
+			Type:        utils.Particle,
+			PrevUpdateD: utils.Point{0, 0},
 		}
 	}
 

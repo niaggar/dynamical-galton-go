@@ -2,7 +2,7 @@ package logic
 
 import (
 	"go-galtonboard/entities"
-	"go-galtonboard/models"
+	model "go-galtonboard/models"
 	"go-galtonboard/utils"
 	"log"
 	"sync"
@@ -148,6 +148,12 @@ func (e *Engine) updateBodies(t, dt float64) {
 
 		e.Model.UpdateBall(p, t, dt)
 	}
+
+	for _, p := range e.Pegs {
+		if e.Configs.PegConfig.Displacement.Displacement {
+			e.Model.UpdatePeg(p, t, dt, &e.Configs.PegConfig.Displacement)
+		}
+	}
 }
 
 func (e *Engine) validateCollisionsMesh() {
@@ -229,14 +235,38 @@ func (e *Engine) validateConstraintsMesh() {
 	rows := e.Configs.BoardConfig.NRows
 	cols := e.Configs.BoardConfig.NCols
 
+	// Top and bottom borders
 	for j := 0; j < cols; j++ {
 		e.processCellConstraints(e.Mesh.GetCell(0, j))
 		e.processCellConstraints(e.Mesh.GetCell(rows-1, j))
 	}
 
-	for i := 1; i < rows; i++ {
-		e.processCellConstraints(e.Mesh.GetCell(i, 0))
-		e.processCellConstraints(e.Mesh.GetCell(i, cols-1))
+	// Right and left borders
+	if e.Configs.BoardConfig.Periodic {
+		for i := 0; i < rows; i++ {
+			cell := e.Mesh.GetCell(i, 0)
+			particles := cell.ParticlesIds
+			for _, pId := range particles {
+				p := e.Particles[pId]
+				if p.Position[0]-p.Radius < e.HorizontalMin {
+					p.Position[0] = e.HorizontalMax - p.Radius
+				}
+			}
+
+			cell = e.Mesh.GetCell(i, cols-1)
+			particles = cell.ParticlesIds
+			for _, pId := range particles {
+				p := e.Particles[pId]
+				if p.Position[0]+p.Radius > e.HorizontalMax {
+					p.Position[0] = e.HorizontalMin + p.Radius
+				}
+			}
+		}
+	} else {
+		for i := 1; i < rows; i++ {
+			e.processCellConstraints(e.Mesh.GetCell(i, 0))
+			e.processCellConstraints(e.Mesh.GetCell(i, cols-1))
+		}
 	}
 }
 

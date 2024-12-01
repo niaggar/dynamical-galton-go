@@ -40,6 +40,15 @@ type ParticleConfig struct {
 	InitDeltaVy float64
 }
 
+// PegDisplacement represents the displacement of the pegs
+type PegDisplacement struct {
+	Displacement bool
+	AmplitudeX   float64
+	AmplitudeY   float64
+	FrequencyX   float64
+	FrequencyY   float64
+}
+
 // PegConfig represents the configuration of the pegs
 type PegConfig struct {
 	MinRadius    float64
@@ -48,6 +57,7 @@ type PegConfig struct {
 	Distribution int
 	DeltaFactor  float64
 	CenterFactor int
+	Displacement PegDisplacement
 }
 
 // BoardConfig represents the configuration of the board
@@ -56,6 +66,7 @@ type BoardConfig struct {
 	HorizontalSpace float64
 	NRows           int
 	NCols           int
+	Periodic        bool
 }
 
 // EngineConfig represents the configuration of the logic
@@ -129,12 +140,20 @@ func CreateBaseConfig(route string) error {
 			DeltaFactor:  0.1,
 			CenterFactor: 0,
 			Distribution: PegUniformDist,
+			Displacement: PegDisplacement{
+				Displacement: false,
+				AmplitudeX:   0,
+				AmplitudeY:   0,
+				FrequencyX:   0,
+				FrequencyY:   0,
+			},
 		},
 		BoardConfig: BoardConfig{
 			VerticalSpace:   20,
 			HorizontalSpace: 20,
 			NRows:           20,
 			NCols:           25,
+			Periodic:        false,
 		},
 		EngineConfig: EngineConfig{
 			SubSteps:    2,
