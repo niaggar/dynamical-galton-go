@@ -77,6 +77,7 @@ type EngineConfig struct {
 	Dt          float64
 	ThreadCount int
 	CPUCount    int
+	Gravity     [2]float64
 }
 
 // SaveConfig represents the configuration of the save
@@ -150,11 +151,12 @@ func CreateBaseConfig(route string) error {
 			},
 		},
 		BoardConfig: BoardConfig{
-			VerticalSpace:   20,
-			HorizontalSpace: 20,
-			NRows:           20,
-			NCols:           25,
-			Periodic:        false,
+			VerticalSpace:       20,
+			HorizontalSpace:     20,
+			NRows:               20,
+			NCols:               25,
+			Periodic:            false,
+			StartHeightParticle: 20,
 		},
 		EngineConfig: EngineConfig{
 			SubSteps:    2,
@@ -162,6 +164,7 @@ func CreateBaseConfig(route string) error {
 			Dt:          0.03,
 			ThreadCount: 1,
 			CPUCount:    1,
+			Gravity:     [2]float64{0, -9.8},
 		},
 		SaveConfig: SaveConfig{
 			SavePaths:     true,

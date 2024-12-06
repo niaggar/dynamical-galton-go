@@ -128,7 +128,7 @@ func (e *Engine) applyForces() {
 			continue
 		}
 
-		p.Acceleration = utils.Point{0, -9.81}
+		p.Acceleration = e.Configs.EngineConfig.Gravity
 	}
 }
 
