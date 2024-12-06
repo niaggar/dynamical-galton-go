@@ -62,11 +62,12 @@ type PegConfig struct {
 
 // BoardConfig represents the configuration of the board
 type BoardConfig struct {
-	VerticalSpace   float64
-	HorizontalSpace float64
-	NRows           int
-	NCols           int
-	Periodic        bool
+	VerticalSpace       float64
+	HorizontalSpace     float64
+	NRows               int
+	NCols               int
+	Periodic            bool
+	StartHeightParticle float64
 }
 
 // EngineConfig represents the configuration of the logic

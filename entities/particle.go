@@ -71,7 +71,7 @@ func NewPegs(pegConfig utils.PegConfig, boardConfig utils.BoardConfig) ([]*Parti
 	}
 
 	width := boardConfig.HorizontalSpace * float64(boardConfig.NCols-1)
-	height := boardConfig.VerticalSpace * float64(boardConfig.NRows+1)
+	height := boardConfig.VerticalSpace*float64(boardConfig.NRows-1) + boardConfig.StartHeightParticle
 
 	border[0] = &utils.Point{width / 2, height}
 	border[1] = &utils.Point{width, height}
